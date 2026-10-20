@@ -1,0 +1,29 @@
+#!/bin/bash
+# Open a folder or image in Image Viewer.app (install.sh symlinks this into
+# ~/.local/bin).  With no argument, opens the current folder.
+set -euo pipefail
+
+APP="Image Viewer"
+ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+
+case "${1:-}" in
+    -h|--help)
+        echo "usage: imgview [FOLDER_OR_IMAGE]"
+        echo
+        echo "Open a folder (or an image, starting at that image) in $APP."
+        echo "With no argument, opens the current folder."
+        exit 0 ;;
+esac
+
+TARGET="${1:-.}"
+if [[ ! -e "$TARGET" ]]; then
+    echo "imgview: no such file or folder: $TARGET" >&2
+    exit 1
+fi
+TARGET="$(cd "$(dirname "$TARGET")" && pwd)/$(basename "$TARGET")"
+
+if [[ ! -d "$HOME/Applications/$APP.app" && ! -d "/Applications/$APP.app" ]]; then
+    echo "imgview: $APP.app is not installed - run $ROOT/install.sh --app" >&2
+    exit 1
+fi
+exec open -a "$APP" "$TARGET"

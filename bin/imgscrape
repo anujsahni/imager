@@ -1,0 +1,13 @@
+#!/bin/bash
+# Launcher for imgscrape.py using the project's virtualenv, so it can be run
+# from anywhere (install.sh symlinks it into ~/.local/bin).
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+PY="$ROOT/.venv/bin/python"
+
+if [[ ! -x "$PY" ]]; then
+    echo "imgscrape: virtualenv not found at $ROOT/.venv - run $ROOT/install.sh" >&2
+    exit 1
+fi
+exec "$PY" "$ROOT/imgscrape.py" "$@"
